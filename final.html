@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/x-icon" href="lo2.png">
+  <title>AES GUARD</title>
+  <style>
+    body {
+      background-image: url(https://i.pinimg.com/originals/35/58/0d/35580d64b9b883fd0e0678595fc2aefd.gif);
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+      overflow: hidden;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+      background: #2c2c2c;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+      animation: fadeIn 1s ease-in-out;
+      border: 2px solid #4caf50;
+      box-shadow: 0 0 15px #4caf50;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .button {
+      display: masoniy;
+      width: 95%;
+      padding: 10px;
+      margin: 10px 0;
+      background: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+    .button:hover {
+      background:#ec6767;
+    }
+    textarea {
+      width: 88%;
+      height: 150px;
+      background: #333;
+      color: green;
+      border: none;
+      padding: 10px;
+      font-family: monospace;
+    }
+
+    /* Drag and Drop Upload */
+    .drop-zone {
+      border: 2px dashed #4caf50;
+      padding: 20px;
+      margin: 10px 0;
+      border-radius: 50px;
+      background-color: #1f1f1f;
+      cursor: pointer;
+      color: #ccc;
+      transition: background 0.2s, color 0.2s;
+    }
+    .drop-zone.dragover {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    /* New AI Chatbot styles */
+    .chatbot-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 300px;
+      background: #1f1f1f;
+      padding: inherit;
+      padding-bottom: 33px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(255,255,255,0.1);
+      overflow: hidden;
+      display: none;
+      flex-direction: column;
+      z-index: 999;
+    }
+    .chat-header {
+      background: #4caf50;
+      padding: 10px;
+      color: white;
+      font-weight: bold;
+      text-align: center;
+    }
+    .chat-messages {
+      height: 200px;
+      overflow-y: auto;
+      padding: 10px;
+      color: #eee;
+      font-size: 14px;
+    }
+    .chat-input-area {
+      display: flex;
+      padding: 10px;
+      background: #2c2c2c;
+    }
+    .chat-input-area input {
+      flex: 1;
+      padding: 5px;
+      border: none;
+      border-radius: 5px;
+    }
+    .chat-input-area button {
+      background: #4caf50;
+      border: none;
+      padding: 5px 10px;
+      color: white;
+      margin-left: 5px;
+      border-radius: 5px;
+    }
+    .chat-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #4caf50;
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+      z-index: 1000;
+    }
+    .mini-icon {
+  width: 50px;
+  height: 50px;
+  vertical-align: middle;
+  margin-right: 8px;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 style="font-family:fantasy;">
+      <img src="lo2.png" alt="Logo" class="mini-icon"> AES GUARD
+    </h2>
+    
+    <textarea id="output" readonly>ENCRYPTION LOG......</textarea>
+
+    <!-- Drag & Drop File Upload -->
+    <div id="dropZone" class="drop-zone">
+      Drag & drop your file here or click to select
+      <input type="file" id="fileInput" accept="*/*" hidden>
+    </div>
+
+    <button class="button" onclick="saveKey()">Save Key</button>
+    <button class="button" onclick="loadKey()">Load Key</button>
+    <button class="button" onclick="encryptFile()">Encrypt File</button>
+    <button class="button" onclick="decryptFile()">Decrypt File</button>
+  </div>
+
+  <!-- New AI Chatbot -->
+  <div class="chat-toggle" onclick="toggleChatbot()">💬</div>
+  <div class="chatbot-container" id="aiChatbot"><BR>
+    <div class="chat-header">AI Assistant</div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input-area">
+      <input type="text" id="chatInput" placeholder="Ask me anything...">
+      <button onclick="sendAIMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    
+    function saveKey() {
+      document.getElementById('output').value += "\nKey saved successfully.";
+    }
+    function loadKey() {
+      document.getElementById('output').value += "\nKey loaded successfully.";
+    }
+    function encryptFile() {
+      document.getElementById('output').value += "\nFile encrypted successfully.";
+    }
+    function decryptFile() {
+      document.getElementById('output').value += "\nFile decrypted successfully.";
+    }
+  
+    function toggleChatbot() {
+      const bot = document.getElementById('aiChatbot');
+      bot.style.display = bot.style.display === 'none' || bot.style.display === '' ? 'flex' : 'none';
+    }
+  
+    document.getElementById('chatInput').addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        sendAIMessage();
+      }
+    });
+  
+    function sendAIMessage() {
+      const input = document.getElementById('chatInput');
+      const messages = document.getElementById('chatMessages');
+  
+      if (!input.value.trim()) return;
+  
+      const userText = input.value.trim().toLowerCase();
+      messages.innerHTML += `<div><strong>You:</strong> ${input.value}</div>`;
+      input.value = '';
+  
+      let aiReply = "I'm here to help you with AES Guard. How can I assist?";
+  
+      if (userText.includes("about") || userText.includes("what is this") || userText.includes("application")) {
+        aiReply = `AES Guard is a secure web-based tool for file encryption and decryption using AES (Advanced Encryption Standard). It supports drag-and-drop, and has a built-in chatbot for guidance.`;
+      } else if (userText.includes("how to use") || userText.includes("instructions") || userText.includes("guide")) {
+        aiReply = `To use AES Guard:\n1. Save or load your key.\n2. Upload your file.\n3. Click 'Encrypt File' or 'Decrypt File'.\nMake sure to keep your key safe!`;
+      } else if (userText.includes("encrypt")) {
+        aiReply = `To encrypt a file:\n1. Upload it using drag & drop.\n2. Click 'Encrypt File'.\n3. Make sure you've saved a key first!`;
+      } else if (userText.includes("decrypt")) {
+        aiReply = `To decrypt:\n1. Load your encryption key.\n2. Upload the encrypted file.\n3. Click 'Decrypt File'.`;
+      } else if (userText.includes("key")) {
+        aiReply = `The key is used for both encryption and decryption. Save it using 'Save Key' and load it with 'Load Key'. Without the same key, decryption won't work.`;
+      } else if (userText.includes("creator") || userText.includes("developer") || userText.includes("made")) {
+        aiReply = `AES Guard was created by Maria Kishore in 2025. You can reach her at mariakishore2005@gmail.com.`;
+      } else if (userText.includes("secure") || userText.includes("safe") || userText.includes("privacy")) {
+        aiReply = `Yes, AES encryption is one of the most secure algorithms used globally. This tool does all processing in your browser – your files and keys never leave your device.`;
+      } else if (userText.includes("file type") || userText.includes("supported") || userText.includes("format")) {
+        aiReply = `AES Guard supports any file type: documents, images, videos, code, etc. Just drag & drop it, and you're good to go!`;
+      } else if (userText.includes("mobile") || userText.includes("phone") || userText.includes("tablet")) {
+        aiReply = `Yes, AES Guard is mobile-friendly. However, file encryption on mobile may be limited by browser support.`;
+      } else if (userText.includes("error") || userText.includes("not working") || userText.includes("bug")) {
+        aiReply = `If you're experiencing issues, try reloading the page, using a different browser, or checking your key. Let the developer know if the issue persists.`;
+      } else if (userText.includes("clear") || userText.includes("reset")) {
+        aiReply = `To reset the output area, simply clear the text manually or reload the page. There's no 'reset' button yet, but one could be added!`;
+      }
+  
+      setTimeout(() => {
+        messages.innerHTML += `<div><strong>AI:</strong> ${aiReply}</div>`;
+        messages.scrollTop = messages.scrollHeight;
+      }, 500);
+    }
+  
+    const dropZone = document.getElementById("dropZone");
+    const fileInput = document.getElementById("fileInput");
+  
+    dropZone.addEventListener("click", () => fileInput.click());
+  
+    dropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropZone.classList.add("dragover");
+    });
+  
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.classList.remove("dragover");
+    });
+  
+    dropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZone.classList.remove("dragover");
+  
+      const files = e.dataTransfer?.files;
+      if (files && files.length > 0) {
+        const file = files[0];
+        document.getElementById("output").value += `\nFile "${file.name}" dropped successfully.`;
+        fileInput.files = files;
+      }
+    });
+  
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+      if (file) {
+        document.getElementById("output").value += `\nFile "${file.name}" selected.`;
+      }
+    });
+  </script>
+  <script>
+    let aesKey = null;
+    let encryptedData = null;
+    let iv = null;
+  
+    async function generateKey() {
+      aesKey = await crypto.subtle.generateKey(
+        { name: "AES-GCM", length: 256 },
+        true,
+        ["encrypt", "decrypt"]
+      );
+      document.getElementById('output').value += "\nNew key generated.";
+    }
+  
+    async function saveKey() {
+      if (!aesKey) await generateKey();
+      const rawKey = await crypto.subtle.exportKey("raw", aesKey);
+      const blob = new Blob([rawKey], { type: "application/octet-stream" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "aes-key.key";
+      a.click();
+      document.getElementById('output').value += "\nKey saved successfully.";
+    }
+  
+    async function loadKey() {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = ".key";
+      input.onchange = async () => {
+        const file = input.files[0];
+        const arrayBuffer = await file.arrayBuffer();
+        aesKey = await crypto.subtle.importKey(
+          "raw",
+          arrayBuffer,
+          "AES-GCM",
+          true,
+          ["encrypt", "decrypt"]
+        );
+        document.getElementById('output').value += "\nKey loaded successfully.";
+      };
+      input.click();
+    }
+  
+    async function encryptFile() {
+      const file = document.getElementById("fileInput").files[0];
+      if (!file) {
+        document.getElementById('output').value += "\nNo file selected.";
+        return;
+      }
+      if (!aesKey) {
+        document.getElementById('output').value += "\nNo key loaded.";
+        return;
+      }
+  
+      const fileBuffer = await file.arrayBuffer();
+      iv = crypto.getRandomValues(new Uint8Array(12));
+  
+      encryptedData = await crypto.subtle.encrypt(
+        { name: "AES-GCM", iv },
+        aesKey,
+        fileBuffer
+      );
+  
+      const blob = new Blob([iv, new Uint8Array(encryptedData)], {
+        type: "application/octet-stream"
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = file.name + ".aes";
+      a.click();
+  
+      document.getElementById('output').value += `\nFile "${file.name}" encrypted successfully.`;
+    }
+  
+    async function decryptFile() {
+      const file = document.getElementById("fileInput").files[0];
+      if (!file) {
+        document.getElementById('output').value += "\nNo file selected.";
+        return;
+      }
+      if (!aesKey) {
+        document.getElementById('output').value += "\nNo key loaded.";
+        return;
+      }
+  
+      const fileBuffer = await file.arrayBuffer();
+      const iv = new Uint8Array(fileBuffer.slice(0, 12));
+      const data = fileBuffer.slice(12);
+  
+      try {
+        const decrypted = await crypto.subtle.decrypt(
+          { name: "AES-GCM", iv },
+          aesKey,
+          data
+        );
+  
+        const blob = new Blob([decrypted]);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = file.name.replace(".aes", "");
+        a.click();
+  
+        document.getElementById('output').value += `\nFile "${file.name}" decrypted successfully.`;
+      } catch (err) {
+        document.getElementById('output').value += `\nDecryption failed: ${err.message}`;
+      }
+    }
+  </script>
+  
+  <!-- Footer -->
+<footer style="
+  background-color: #1a1a1a;
+  color: #ccc;
+  text-align: center;
+  padding: 15px 10px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  font-size: 14px;
+  border-top: 1px solid #333;
+  z-index: 998;">
+  <div>
+    <strong>AES GUARD</strong> &copy; 2025 | Developed by <span style="color: #4caf50;">Maria kishore<br></span>Guided by Arun mozhi .B  as.prof<span
+  </div>
+  <div>
+    Contact: <a href="mailto:mariakishore2005@gmail.com" style="color: #ec6767; text-decoration: none;">mariakishore2005@gmail.com</a>
+  </div>
+</footer>
+</body>
+</html>

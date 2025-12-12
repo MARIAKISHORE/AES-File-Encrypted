@@ -1,2 +1,5 @@
-# AES-File-Encrypted
-create an fronted project using HTML 5 ,CSS and JS
+# AES-file-encrypted
+
+step 1 : decompress the file
+step 2 : run the final.html
+step 3 : sucessfully executed
